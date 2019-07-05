@@ -1,3 +1,3 @@
-import useAxios from './useAxios';
+import requestImages from './requestImages';
 
-export { useAxios };
+export { requestImages };

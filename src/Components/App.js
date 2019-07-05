@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import action from '../Actions';
 import Header from './Header';
 import Image from './Image';
 import GlobalStyles from '../Styles/GlobalStyles';
-import { useAxios } from '../API';
-
-const IMAGE_COUNT = 28;
 
 const ImageWrapper = styled.div`
   display: grid;
@@ -20,18 +19,20 @@ const ImageWrapper = styled.div`
 `;
 
 export default () => {
-  const [imgStatus, setImgStatus] = useAxios({
-    url: `${process.env.REACT_APP_API}&per_page=${IMAGE_COUNT}`,
-  });
-
+  const { fetchImages } = action;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchImages.request());
+  }, []);
+  const images = useSelector(({ images }) => images);
   return (
     <>
       <GlobalStyles />
       <div className="App">
         <Header />
         <ImageWrapper>
-          {Array.isArray(imgStatus.data) &&
-            imgStatus.data.map(image => (
+          {Array.isArray(images.data) &&
+            images.data.map(image => (
               <Image
                 key={image.id}
                 src={image.urls.small}
