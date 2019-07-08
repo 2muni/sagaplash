@@ -5,31 +5,40 @@ import { useSelector, useDispatch } from 'react-redux';
 import action from '../Actions';
 import Header from './Header';
 import Image from './Image';
+import Button from './Button';
 import GlobalStyles from '../Styles/GlobalStyles';
 
-const ImageWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+const App = styled.div`
   max-width: 1200px;
   margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ImageWrapper = styled.section`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   padding: 25px;
   grid-gap: 25px;
   grid-auto-flow: dense;
   align-items: stretch;
+  width: 100%;
 `;
 
 export default () => {
-  const { fetchImages } = action;
   const dispatch = useDispatch();
+  const loadImages = () => dispatch(action.fetchImages.request());
   useEffect(() => {
-    dispatch(fetchImages.request());
+    loadImages();
   }, []);
   const images = useSelector(({ images }) => images);
   return (
     <>
       <GlobalStyles />
-      <div className="App">
-        <Header />
+
+      <Header />
+      <App>
         <ImageWrapper>
           {Array.isArray(images.data) &&
             images.data.map(image => (
@@ -41,7 +50,12 @@ export default () => {
               />
             ))}
         </ImageWrapper>
-      </div>
+        <Button
+          onClick={() => images.status !== 'pending' && loadImages()}
+          loading={images.status === 'pending'}>
+          Load More
+        </Button>
+      </App>
     </>
   );
 };

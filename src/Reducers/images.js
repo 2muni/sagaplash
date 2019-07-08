@@ -1,4 +1,5 @@
 import { types } from '../Actions';
+import produce from 'immer';
 
 const initialState = {
   status: 'initial',
@@ -11,16 +12,21 @@ export default (state = initialState, { type, payload }) => {
   const { FETCH_IMAGES } = types;
   switch (type) {
     case FETCH_IMAGES.REQUEST:
-      return { ...state, status: 'pending' };
+      return produce(state, draft => {
+        draft.status = 'pending';
+      });
     case FETCH_IMAGES.SUCCESS:
-      return {
-        ...state,
-        data: payload,
-        status: 'success',
-        page: state.page + 1,
-      };
+      return produce(state, draft => {
+        draft.status = 'success';
+        console.log(payload);
+        draft.data = state.data.concat(payload);
+        draft.nextPage += 1;
+      });
     case FETCH_IMAGES.FAILURE:
-      return { ...state, error: payload, status: 'failure' };
+      return produce(state, draft => {
+        draft.error = payload;
+        draft.status = 'failure';
+      });
     default:
       return state;
   }
